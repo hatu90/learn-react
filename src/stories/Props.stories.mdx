@@ -1,0 +1,124 @@
+import { Meta } from '@storybook/addon-docs';
+
+<Meta title="Example/Props" />
+
+# Props usage
+
+Props is a way of customization and data parsing in React.
+
+## Normal usecase
+
+Declaration:
+```
+const Greeting = (props) => <div>Hello, {props.name}</div>
+```
+
+Usage:
+```
+<Greeting name="John Appleseed" />
+```
+
+## Props can be any type [More info](https://reactjs.org/docs/typechecking-with-proptypes.html)
+
+## Props of DOM element
+- DOM element props is converted from the attributes: https://reactjs.org/docs/dom-elements.html
+- React also supported the events that can work with the DOM element: https://reactjs.org/docs/events.html
+
+## Props can be a ** `state` ** from the upper component
+
+Example:
+```
+const Greeting = (props) => <div>Hello, {props.name}</div>
+
+const InputGreeting = () => {
+  const [name, setName] = React.useState('');
+
+  return (
+    <div>
+      <input value={name} onChange={(event) => setName(event.taget.value)} />
+      <br />
+      <Greeting name={name} />
+    </div>
+  )
+}
+
+```
+
+## Props can be a function
+### For DOM element component function is parse as a props to handle event
+
+Example:
+
+```
+const Counter = () => {
+  const [value, setValue] = React.useState(0);
+  const handleOnClick = () => {
+    setValue(value + 1);
+  }
+
+  return (
+    <div>
+      <p>{value}</p>
+      <button onClick={handleOnClick}>Increment</button>
+    </div>
+  )
+}
+
+```
+Explain:
+- `handleOnClick` is a function
+- `handleOnClick` is parsing to `onClick` props of `button`. Each time user clicks the button, the function `handleOnClick` is triggered, hence run the code inside it (Increase the value)
+
+### The props function can take value
+
+The event props in DOM element is parsing with `event` parameter
+
+Example:
+```
+const Greeting = (props) => <div>Hello, {props.name}</div>
+
+const InputGreeting = () => {
+  const [name, setName] = React.useState('');
+
+  const handleChange = (event) => setName(event.taget.value);
+
+  return (
+    <div>
+      <input value={name} onChange={handleChange} />
+      <br />
+      <Greeting name={name} />
+    </div>
+  )
+}
+
+```
+Explain:
+- `handleChange` is a functional props which parse to `onChange` event of `input`
+- The `handleChange` is getting the `event` parameter by default. [See more](https://reactjs.org/docs/events.html#form-events)
+
+### In user-defined component
+
+Example:
+
+```
+const MeetPerson = ({ name, onMeet }) => <button onClick={() => onMeet(name)}>{name}</button>;
+
+const Greeting = () => {
+  const [person, setPerson] = React.useState();
+
+  return (
+    <>
+      {person && <h2>{person}</h2>}
+      <div>
+        {
+          ["Alice", "Bob", "John"].map((name) => <MeetPerson name={name} onMeet={(name) => setPerson(name)} />)
+        }
+      </div>
+    </>
+  )
+}
+```
+Explain:
+- In `MeetPerson`, `onMeet` is a function props which invokes each time the button click. `onMeet` function also carries `name` as a parameter
+- In `Greeting`, `onMeet` is assign to a function `(name) => setPerson(name)`. Each time `onMeet` invokes, the function `(name) => setPerson(name)` invokes, the `setPerson` is called with `name` parsed from `onMeet`.
+
